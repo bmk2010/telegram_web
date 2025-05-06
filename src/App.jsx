@@ -25,9 +25,16 @@ const App = () => {
   }, []);
 
   const handleSendStars = () => {
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.openTelegramLink("https://t.me/hi_its_bmk?start=sendStars");
+    const confirmed = window.confirm(
+      "@hi_its_bmk foydalanuvchisiga Stars yubormoqchimisiz?"
+    );
+    if (confirmed) {
+      const tg = window.Telegram?.WebApp;
+      if (tg) {
+        tg.openTelegramLink("https://t.me/hi_its_bmk/start?startapp=stars");
+      } else {
+        window.open("https://t.me/hi_its_bmk/start?startapp=stars", "_blank");
+      }
     }
   };
 
