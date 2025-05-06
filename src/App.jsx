@@ -42,7 +42,7 @@ const App = () => {
           payload: "test",
           provider_token: "371317599:TEST:1746526335630",
           currency: "UZS", // ISO 4217 code format, katta harflarda bo'lishi kerak
-          prices: [{ label: "Stars", amount: 500000 }], // amount tiyinlarda (100x5 = 500 UZS -> 50000)
+          prices: [{ label: "Stars", amount: 100000 }], // amount tiyinlarda (100x5 = 500 UZS -> 50000)
         }),
       });
 
