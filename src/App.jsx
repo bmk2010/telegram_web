@@ -26,12 +26,11 @@ const App = () => {
   }, []);
 
   const handleSendStars = () => {
-    const confirmed = window.confirm(
-      "Bizning botga donat qilasizmi?"
-    );
+    const confirmed = window.confirm("Bizning botga donat qilasizmi?");
     if (confirmed) {
       const tg = window.Telegram?.WebApp;
-      const starsLink = "https://t.me/ovoz_top_uzbot/start?startapp=stars";
+      const starsLink =
+        "https://t.me/ovoz_top_uzbot/salom_uz_app/start?startapp=stars";
       if (tg) {
         tg.openTelegramLink(starsLink);
       } else {
@@ -39,7 +38,6 @@ const App = () => {
       }
     }
   };
-  
 
   if (error) {
     return (
