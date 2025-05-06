@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 const App = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [paymentRes, setPaymentRes] = useState(null);
 
   useEffect(() => {
     try {
@@ -24,17 +25,36 @@ const App = () => {
     }
   }, []);
 
-  const handleSendStars = () => {
-    const confirmed = window.confirm(
-      "@hi_its_bmk foydalanuvchisiga Stars yubormoqchimisiz?"
-    );
-    if (confirmed) {
-      const tg = window.Telegram?.WebApp;
-      if (tg) {
-        tg.openTelegramLink("https://t.me/hi_its_bmk/start?startapp=stars");
-      } else {
-        window.open("https://t.me/hi_its_bmk/start?startapp=stars", "_blank");
+  const handleSendStars = async () => {
+    const link =
+      "https://api.telegram.org/bot7843578328:AAHCfMhOwEAJSmR28gGy-vvujSEAzZeAP9A/sendInvoice";
+
+    try {
+      const req = await fetch(link, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chat_id: user.id,
+          title: "Podderjka uchun",
+          description: "Bu donat orqali siz meni qo'llab-quvvatlaysiz",
+          payload: "test",
+          provider_token: "371317599:TEST:1746526335630",
+          currency: "UZS", // ISO 4217 code format, katta harflarda bo'lishi kerak
+          prices: [{ label: "Stars", amount: 500000 }], // amount tiyinlarda (100x5 = 500 UZS -> 50000)
+        }),
+      });
+
+      const response = await req.json();
+
+      if (!req.ok || response.ok === false) {
+        throw new Error(response.description || "To‘lov yuborishda xatolik.");
       }
+
+      setPaymentRes("To‘lov yuborildi. Iltimos, Telegram’da tasdiqlang.");
+    } catch (error) {
+      setPaymentRes(`Xatolik: ${error.message || "Noma’lum xatolik"}`);
     }
   };
 
@@ -88,6 +108,11 @@ const App = () => {
       >
         ⭐ @hi_its_bmk'ga Stars yuborish
       </button>
+      {paymentRes && (
+        <div className="mt-4 px-4 py-2 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded">
+          {paymentRes}
+        </div>
+      )}
     </div>
   );
 };
