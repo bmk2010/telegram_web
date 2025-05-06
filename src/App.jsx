@@ -153,7 +153,9 @@ const App = () => {
         const existingUser = await getUser(tgUser.id);
 
         if (!existingUser) {
-          await saveUser(tgUser);
+          await saveUser(tgUser).then(() =>
+            alert("Siz bazada yo'q ekansiz sizni bazaga qo'shdik")
+          );
         }
 
         tg.expand();
@@ -168,7 +170,7 @@ const App = () => {
   if (!gameStarted) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 via-blue-50 to-white p-6 text-center animate-fade-in">
-        {user && (
+        {user ? (
           <div className="flex flex-col items-center mb-8 p-5 bg-white shadow-lg rounded-2xl border border-indigo-200 w-full max-w-sm transition-transform hover:scale-105">
             {user.username && (
               <img
@@ -188,6 +190,8 @@ const App = () => {
             )}
             <p className="text-gray-500 text-sm mt-1">ID: {user.id}</p>
           </div>
+        ) : (
+          <>Telegramdan ochilmadi</>
         )}
 
         <h1 className="text-4xl font-bold text-indigo-700 mb-4 tracking-wide drop-shadow-sm">
