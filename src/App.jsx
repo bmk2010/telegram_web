@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import { getUser, saveUser } from "./db";
 
 const App = () => {
   const [board, setBoard] = useState(Array(9).fill(null));
@@ -250,7 +251,7 @@ const App = () => {
             onClick={resetGame}
             className="mt-3 px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 shadow"
           >
-            Qayta o‘ynash
+            Ok
           </button>
         </div>
       )}
