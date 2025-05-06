@@ -164,18 +164,18 @@ const App = () => {
         }
 
         const tgUser = tg.initDataUnsafe.user;
-        setUser({ ...tgUser, exp: existingUser?.exp || 0 });
-
-        const localExp = parseInt(localStorage.getItem("exp") || "0", 10);
-        setExp((existingUser?.exp || 0) + localExp);
-
         const existingUser = await getUser(tgUser.id);
 
         if (!existingUser) {
           await saveUser(tgUser).then(() =>
-            alert("Siz bazada yo'q ekansiz sizni bazaga qo'shdik")
+            alert("Siz bazada yo'q ekansiz, sizni bazaga qo'shdik")
           );
         }
+
+        setUser({ ...tgUser, exp: existingUser?.exp || 0 });
+
+        const localExp = parseInt(localStorage.getItem("exp") || "0", 10);
+        setExp((existingUser?.exp || 0) + localExp);
 
         tg.expand();
       } catch (err) {
