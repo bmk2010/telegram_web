@@ -1,97 +1,96 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const App = () => {
-  const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
-  const [paymentRes, setPaymentRes] = useState(null);
+  const initialBoard = Array(9).fill(null);
+  const [board, setBoard] = useState(initialBoard);
+  const [isUserTurn, setIsUserTurn] = useState(true);
+  const [winner, setWinner] = useState(null);
 
-  useEffect(() => {
-    try {
-      const tg = window.Telegram?.WebApp;
-      if (!tg) {
-        throw new Error("Telegram WebApp mavjud emas.");
-      }
-
-      tg.ready();
-
-      if (!tg.initDataUnsafe?.user) {
-        throw new Error("Foydalanuvchi ma'lumotlari topilmadi.");
-      }
-
-      setUser(tg.initDataUnsafe.user);
-      tg.expand();
-    } catch (err) {
-      setError(err.message);
+  const checkWinner = (brd) => {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    for (let [a, b, c] of lines) {
+      if (brd[a] && brd[a] === brd[b] && brd[a] === brd[c]) return brd[a];
     }
-  }, []);
-
-  const handleSendStars = () => {
-    const confirmed = window.confirm("Bizning botga donat qilasizmi?");
-    if (confirmed) {
-      const tg = window.Telegram?.WebApp;
-      const starsLink =
-        "https://t.me/ovoz_top_uzbot/salom_uz_app/start?startapp=stars";
-      if (tg) {
-        tg.openTelegramLink(starsLink);
-      } else {
-        window.open(starsLink, "_blank");
-      }
-    }
+    if (brd.every(Boolean)) return "draw";
+    return null;
   };
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-red-100 px-4">
-        <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-          <h1 className="text-2xl font-semibold text-red-600 mb-3">
-            Xatolik yuz berdi
-          </h1>
-          <p className="text-red-500">{error}</p>
-        </div>
-      </div>
-    );
-  }
+  const handleClick = (index) => {
+    if (!isUserTurn || board[index] || winner) return;
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <p className="text-gray-600 text-xl animate-pulse">
-          Ma'lumotlar yuklanmoqda...
-        </p>
-      </div>
-    );
-  }
+    const newBoard = [...board];
+    newBoard[index] = "X";
+    setBoard(newBoard);
+    setIsUserTurn(false);
+  };
+
+  const botMove = (brd) => {
+    const emptyIndices = brd.map((v, i) => (v ? null : i)).filter((v) => v !== null);
+    if (emptyIndices.length === 0) return brd;
+    const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+    const newBoard = [...brd];
+    newBoard[randomIndex] = "O";
+    return newBoard;
+  };
+
+  useEffect(() => {
+    const res = checkWinner(board);
+    if (res) {
+      setWinner(res);
+      return;
+    }
+
+    if (!isUserTurn) {
+      const timeout = setTimeout(() => {
+        const botBoard = botMove(board);
+        setBoard(botBoard);
+        setIsUserTurn(true);
+        const res = checkWinner(botBoard);
+        if (res) setWinner(res);
+      }, 600);
+      return () => clearTimeout(timeout);
+    }
+  }, [board, isUserTurn]);
+
+  const resetGame = () => {
+    setBoard(initialBoard);
+    setIsUserTurn(true);
+    setWinner(null);
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white to-blue-50 p-6">
-      {user.username && (
-        <img
-          src={`https://t.me/i/userpic/320/${user.username}.jpg`}
-          alt="User Avatar"
-          className="w-28 h-28 rounded-full mb-4 object-cover border-4 border-blue-300 shadow"
-          onError={(e) => {
-            e.target.style.display = "none";
-          }}
-        />
-      )}
-      <h1 className="text-3xl font-bold text-gray-800 mb-1">
-        Salom, {user.first_name}!
-      </h1>
-      {user.last_name && (
-        <h2 className="text-xl text-gray-600 mb-3">{user.last_name}</h2>
-      )}
-      <p className="text-gray-500 mb-1">ID: {user.id}</p>
-      {user.username && <p className="text-gray-500 mb-6">@{user.username}</p>}
-
-      <button
-        onClick={handleSendStars}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg text-lg transition duration-200"
-      >
-        ⭐ @hi_its_bmk'ga Stars yuborish
-      </button>
-      {paymentRes && (
-        <div className="mt-4 px-4 py-2 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded">
-          {paymentRes}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 p-6">
+      <h1 className="text-3xl font-bold mb-4 text-indigo-700">Tic Tac Toe 🎮</h1>
+      <div className="grid grid-cols-3 gap-2">
+        {board.map((val, i) => (
+          <button
+            key={i}
+            onClick={() => handleClick(i)}
+            className="w-20 h-20 text-3xl font-bold rounded-lg shadow bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200"
+          >
+            {val}
+          </button>
+        ))}
+      </div>
+      {winner && (
+        <div className="mt-6 text-xl text-center text-indigo-900">
+          {winner === "draw" ? "Durang!" : `${winner} g‘olib bo‘ldi!`}
+          <br />
+          <button
+            onClick={resetGame}
+            className="mt-3 px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 shadow"
+          >
+            Qayta o‘ynash
+          </button>
         </div>
       )}
     </div>
