@@ -127,7 +127,20 @@ const App = () => {
         setBoard(botBoard);
         setIsUserTurn(true);
         const res = checkWinner(botBoard);
-        if (res) setWinner(res);
+        if (res) {
+          setWinner(res);
+        
+          if (res === "X") {
+            let expGain = 0;
+            if (botLevel === "easy") expGain = 1;
+            else if (botLevel === "normal") expGain = 5;
+            else if (botLevel === "hard") expGain = 15;
+        
+            const currentExp = parseInt(localStorage.getItem("exp") || "0", 10);
+            localStorage.setItem("exp", currentExp + expGain);
+          }
+        }
+        
       }, 700);
       return () => clearTimeout(timeout);
     }
@@ -197,6 +210,11 @@ const App = () => {
         <h1 className="text-4xl font-bold text-indigo-700 mb-4 tracking-wide drop-shadow-sm">
           Tic Tac Toe 🎮
         </h1>
+
+        <p className="text-indigo-600 font-medium mt-2">
+           Local Exp: {(localStorage.getItem("exp") || 0) +  user?.exp || 0}
+        </p>
+
 
         <p className="text-gray-600 text-lg mb-3 font-medium">
           Bot kuchini tanlang:
