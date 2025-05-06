@@ -25,38 +25,21 @@ const App = () => {
     }
   }, []);
 
-  const handleSendStars = async () => {
-    const link =
-      "https://api.telegram.org/bot7843578328:AAHCfMhOwEAJSmR28gGy-vvujSEAzZeAP9A/sendInvoice";
-
-    try {
-      const req = await fetch(link, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chat_id: user.id,
-          title: "Podderjka uchun",
-          description: "Bu donat orqali siz meni qo'llab-quvvatlaysiz",
-          payload: "test",
-          provider_token: "5775769170:LIVE:TG_dSLDR0K0EprICT3eyzxA2jEA",
-          currency: "UZS", // ISO 4217 code format, katta harflarda bo'lishi kerak
-          prices: [{ label: "Stars", amount: 100000 }], // amount tiyinlarda (100x5 = 500 UZS -> 50000)
-        }),
-      });
-
-      const response = await req.json();
-
-      if (!req.ok || response.ok === false) {
-        throw new Error(response.description || "To‘lov yuborishda xatolik.");
+  const handleSendStars = () => {
+    const confirmed = window.confirm(
+      "Bizning botga donat qilasizmi?"
+    );
+    if (confirmed) {
+      const tg = window.Telegram?.WebApp;
+      const starsLink = "https://t.me/ovoz_top_uzbot/start?startapp=stars";
+      if (tg) {
+        tg.openTelegramLink(starsLink);
+      } else {
+        window.open(starsLink, "_blank");
       }
-
-      setPaymentRes("To‘lov yuborildi. Iltimos, Telegram’da tasdiqlang.");
-    } catch (error) {
-      setPaymentRes(`Xatolik: ${error.message || "Noma’lum xatolik"}`);
     }
   };
+  
 
   if (error) {
     return (
