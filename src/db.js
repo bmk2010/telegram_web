@@ -2,13 +2,14 @@ const db_url = "https://677d387a4496848554c9947a.mockapi.io/api";
 
 export async function getUser(id) {
   try {
-    const req = await fetch(`${db_url}/users`);
-    const res = await req.json();
+    const res = await fetch(`${db_url}/users`);
+    const data = await res.json();
 
-    const userData = res.find((user) => user.id == id);
-    return userData;
+    const userList = data[0]?.users || [];
+    const user = userList.find((u) => u.id == id);
+    return user;
   } catch (error) {
-    window.alert(error.message);
+    console.error("getUser xatolik:", error.message);
   }
 }
 
