@@ -40,7 +40,7 @@ const App = () => {
           title: "Podderjka uchun",
           description: "Bu donat orqali siz meni qo'llab-quvvatlaysiz",
           payload: "test",
-          provider_token: "371317599:TEST:1746526335630",
+          provider_token: "5775769170:LIVE:TG_dSLDR0K0EprICT3eyzxA2jEA",
           currency: "UZS", // ISO 4217 code format, katta harflarda bo'lishi kerak
           prices: [{ label: "Stars", amount: 100000 }], // amount tiyinlarda (100x5 = 500 UZS -> 50000)
         }),
