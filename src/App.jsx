@@ -11,6 +11,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [exp, setExp] = useState(0);
+  const [localExp, setLocalExp] = useState(0);
 
   const checkWinner = (brd) => {
     const lines = [
@@ -119,6 +120,21 @@ const App = () => {
     const res = checkWinner(board);
     if (res) {
       setWinner(res);
+
+      // 👇 Faqat foydalanuvchi g‘alaba qilganda exp qo‘sh
+      if (res === "X") {
+        let expGain = 0;
+        if (botLevel === "easy") expGain = 1;
+        else if (botLevel === "normal") expGain = 5;
+        else if (botLevel === "hard") expGain = 15;
+
+        const currentExp = parseInt(localStorage.getItem("exp") || "0", 10);
+        const newLocalExp = currentExp + expGain;
+        localStorage.setItem("exp", newLocalExp);
+
+        setLocalExp((prev) => prev + expGain);
+      }
+
       return;
     }
 
@@ -127,23 +143,6 @@ const App = () => {
         const botBoard = botMove(board, botLevel);
         setBoard(botBoard);
         setIsUserTurn(true);
-        const res = checkWinner(botBoard);
-        if (res) {
-          setWinner(res);
-
-          if (res === "X") {
-            let expGain = 0;
-            if (botLevel === "easy") expGain = 1;
-            else if (botLevel === "normal") expGain = 5;
-            else if (botLevel === "hard") expGain = 15;
-
-            const currentExp = parseInt(localStorage.getItem("exp") || "0", 10);
-            const newLocalExp = currentExp + expGain;
-            localStorage.setItem("exp", newLocalExp);
-
-            setExp((prev) => prev + expGain);
-          }
-        }
       }, 700);
       return () => clearTimeout(timeout);
     }
@@ -175,7 +174,8 @@ const App = () => {
         setUser({ ...tgUser, exp: existingUser?.exp || 0 });
 
         const localExp = parseInt(localStorage.getItem("exp") || "0", 10);
-        setExp((existingUser?.exp || 0) + localExp);
+        setExp(existingUser?.exp);
+        setLocalExp(localExp);
 
         tg.expand();
       } catch (err) {
@@ -217,7 +217,10 @@ const App = () => {
           Tic Tac Toe 🎮
         </h1>
 
-        <p className="text-indigo-600 font-medium mt-2">Umumiy Exp: {exp}</p>
+        <p className="text-indigo-600 font-medium mt-2">Saqlangan Exp: {exp}</p>
+        <p className="text-indigo-600 font-medium mt-2">
+          Lokal Exp: {localExp}
+        </p>
 
         <p className="text-gray-600 text-lg mb-3 font-medium">
           Bot kuchini tanlang:
